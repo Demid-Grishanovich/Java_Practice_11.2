@@ -49,6 +49,21 @@ public class Result {
     public void setMark(int  mark) {
         this.mark = mark;
     }
+
+    public void setMark(String mark) {
+
+        this.mark = (int) (Float.parseFloat(mark) * 10);
+    }
+
+    public String getStringMark() {
+        // Convert the mark to a floating-point number with one decimal place
+        return String.format("%.1f", getMark() / 10.0);
+    }
+
+    @Override
+    public String toString() {
+        return  test + ";" + date + ";" + getStringMark();
+    }
 }
 
 
