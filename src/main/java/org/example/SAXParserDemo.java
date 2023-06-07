@@ -16,7 +16,7 @@ public class SAXParserDemo {
 
         List<Result> results = handler.getResults();
         for (Result result : results) {
-            System.out.printf("%s;%tF;%s\n" , result.getTest(), result.getDate(), result.getStringMark());
+            System.out.printf("%s;%s;%s\n" , result.getTest(), result.getStringDate(), result.getStringMark());
         }
     }
 }

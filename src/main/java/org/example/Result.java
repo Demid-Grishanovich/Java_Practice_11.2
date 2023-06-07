@@ -1,6 +1,7 @@
 package org.example;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 
 public class Result {
     private String login;
@@ -17,6 +18,14 @@ public class Result {
         this.date = date;
         this.mark = mark;
     }
+
+    public Result(String login, String test, String date, String  mark) {
+        this.login = login;
+        this.test = test;
+        this.date = Date.valueOf(date);
+        this.mark = Integer.parseInt(mark);
+    }
+
 
     public String getLogin() {
         return login;
@@ -56,13 +65,20 @@ public class Result {
     }
 
     public String getStringMark() {
-        // Convert the mark to a floating-point number with one decimal place
+
         return String.format("%.1f", getMark() / 10.0);
     }
 
+    private final static SimpleDateFormat OUTPUT_DATE_FORMAT =
+            new SimpleDateFormat("dd.MM.yyyy");
+    public String getStringDate() {
+        return OUTPUT_DATE_FORMAT.format(date);
+    }
+
+
     @Override
     public String toString() {
-        return  test + ";" + date + ";" + getStringMark();
+        return  test + ";" + getStringDate() + ";" + getStringMark();
     }
 }
 
