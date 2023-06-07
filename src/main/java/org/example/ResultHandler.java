@@ -3,56 +3,56 @@ package org.example;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class ResultHandler extends DefaultHandler {
-    private enum ResultEnum {RESULTS, STUDENT, LOGIN, TESTS, TEST}
+    private enum ResultEnum {
+        RESULTS, STUDENT, LOGIN, TESTS, TEST
+    }
 
     private final List<Result> results = new ArrayList<>();
-    private Result currentResult = null;
-    private String currentLogin = null;
-    private ResultEnum currentEnum = null;
+    private ResultEnum currentEnum;
+    private String login;
 
     public List<Result> getResults() {
         return results;
     }
 
     @Override
-    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-        try {
-            currentEnum = ResultEnum.valueOf(localName.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            // Ignore unhandled tags
-            currentEnum = null;
-            return;
-        }
+    public void startElement(String uri, String localName, String qName, Attributes attributes)  throws SAXException {
+        currentEnum = ResultEnum.valueOf(localName.toUpperCase());
 
         if (currentEnum == ResultEnum.TEST) {
-            currentResult = new Result();
-            currentResult.setLogin(currentLogin);
-            currentResult.setTest(attributes.getValue("name"));
-            currentResult.setDate(Date.valueOf(attributes.getValue("date")));
-            // Store the mark as an integer, rounded to the nearest whole number
-            String strMark = attributes.getValue("mark");
-            currentResult.setMark((int) Math.round(Double.valueOf(strMark) * 10));
-            results.add(currentResult);
+            final int TEST_INDEX = 0, DATE_INDEX = 1, MARK_INDEX = 2;
+            String test = attributes.getValue(TEST_INDEX);
+            String dateStr = attributes.getValue(DATE_INDEX);
+            String markStr = attributes.getValue(MARK_INDEX);
+
+            if (login != null && test != null && dateStr != null && markStr != null) {
+                Date date = Date.valueOf(dateStr);
+                int mark = (int) Math.round(Double.parseDouble(markStr) * 10);
+
+                Result result = new Result();
+                result.setLogin(login);
+                result.setTest(test);
+                result.setDate(date);
+                result.setMark(mark);
+
+                results.add(result);
+            }
         }
     }
 
     @Override
-    public void characters(char[] ch, int start, int length) throws SAXException {
+    public void characters(char[] ch, int start, int length) throws SAXException  {
         if (currentEnum == ResultEnum.LOGIN) {
-            currentLogin = new String(ch, start, length);
-        }
-    }
-
-    @Override
-    public void endElement(String uri, String localName, String qName) throws SAXException {
-        if (localName.equalsIgnoreCase("test")) {
-            currentResult = null;
+            String str = new String(ch, start, length).trim();
+            if (!str.isEmpty()) {
+                login = str;
+            }
         }
     }
 }
